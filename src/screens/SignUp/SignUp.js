@@ -1,6 +1,11 @@
 import React, { useState } from 'react';
 import { View, Text } from 'react-native';
-import { CustomInputFeild, CustomHeader, CustomBtn } from '../../components';
+import {
+  CustomInputFeild,
+  CustomHeader,
+  CustomBtn,
+  ProfileImage,
+} from '../../components';
 import { Constent, ContainerStyle } from '../../theme';
 import AlreadyUser from './utils/AlreadyUser';
 const SignUp = ({ navigation }) => {
@@ -85,6 +90,7 @@ const SignUp = ({ navigation }) => {
     <View style={ContainerStyle.MainContainer}>
       <CustomHeader title={Constent.constent.signUp} />
       <View style={ContainerStyle.contentContainer}>
+        <ProfileImage />
         <CustomInputFeild
           title={Constent.constent.name}
           required
