@@ -8,11 +8,13 @@ import {
 } from '../../components';
 import { Constent, ContainerStyle } from '../../theme';
 import AlreadyUser from './utils/AlreadyUser';
+import { database } from '../../..';
 const SignUp = ({ navigation }) => {
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userMobile, setUserMobile] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [url, setUrl] = useState('');
   const [error, setError] = useState({
     emailErr: '',
     passwordErr: '',
@@ -29,10 +31,31 @@ const SignUp = ({ navigation }) => {
         validation(Constent.constent.password) &&
         validation(Constent.constent.mobile)
       ) {
-        navigation.navigate('SignIn');
+        if (signUp()) {
+          navigation.navigate('SignIn');
+        } else {
+          console.log('you are not valid user');
+        }
       } else {
         console.log('i am in else');
       }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const signUp = async () => {
+    const users = database.collections.get('user');
+    try {
+      await database.write(async () => {
+        await users.create(user => {
+          user.name = userName;
+          user.email = userEmail;
+          user.password = userPassword;
+          user.mobile = userMobile;
+        });
+      });
+      console.log('data saved');
+      return true;
     } catch (err) {
       console.log(err);
     }
@@ -90,7 +113,7 @@ const SignUp = ({ navigation }) => {
     <View style={ContainerStyle.MainContainer}>
       <CustomHeader title={Constent.constent.signUp} />
       <View style={ContainerStyle.contentContainer}>
-        <ProfileImage />
+        <ProfileImage setUrl={setUrl} url={url} />
         <CustomInputFeild
           title={Constent.constent.name}
           required

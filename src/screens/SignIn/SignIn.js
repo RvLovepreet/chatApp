@@ -1,14 +1,29 @@
 import React, { useState } from 'react';
+import { Q } from '@nozbe/watermelondb';
 import { View } from 'react-native';
 import { CustomInputFeild, CustomHeader, CustomBtn } from '../../components';
-import { Layout, ContainerStyle } from '../../theme';
+import { ContainerStyle } from '../../theme';
 import { heightPercentageToDP as hp } from '../../theme';
-
+import { database } from '../../..';
 const SignIn = ({ navigation }) => {
   const [userPassword, setUserPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const goToNext = () => {
-    navigation.navigate('Main');
+  const goToNext = async () => {
+    if (await isUser()) {
+      navigation.navigate('Main');
+    } else {
+      console.log('check email and password');
+    }
+  };
+  const isUser = async () => {
+    try {
+      const users = await database
+        .get('user')
+        .query(Q.where('email', userEmail), Q.where('password', userPassword));
+      return users.length ? true : false;
+    } catch (err) {
+      console.log(err);
+    }
   };
   return (
     <View style={ContainerStyle.MainContainer}>
