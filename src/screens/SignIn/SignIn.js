@@ -4,15 +4,15 @@ import { CustomInputFeild, CustomHeader, CustomBtn } from '../../components';
 import { Layout, ContainerStyle } from '../../theme';
 import { heightPercentageToDP as hp } from '../../theme';
 
-const SignIn = () => {
+const SignIn = ({ navigation }) => {
   const [userPassword, setUserPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const goToNext = () => {
-    console.log('fdsfasgfagdsf');
+    navigation.navigate('Main');
   };
   return (
     <View style={ContainerStyle.MainContainer}>
-      <CustomHeader title="Sign In" />
+      <CustomHeader title="Sign In" goToBack={() => navigation.goBack()} />
       <View style={ContainerStyle.contentContainer}>
         <CustomInputFeild
           title="Email"

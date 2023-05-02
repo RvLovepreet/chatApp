@@ -1,17 +1,21 @@
 import React from 'react';
+import Icon from 'react-native-vector-icons/Ionicons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from '../../theme';
 import { FontSize, Colors, NavigationColors } from '../../theme/Variables';
+import { Constent } from '../../theme';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const CustomHeader = ({ title, goToBack, onbtnClick }) => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerContent}>
-        {/*    {goToBack ? (
-          <TouchableOpacity onPress={goToBack}>{Icons.Back}</TouchableOpacity>
-        ) : null} */}
+        {goToBack ? (
+          <TouchableOpacity onPress={goToBack}>
+            <Text>{Constent.Icons.Back}</Text>
+          </TouchableOpacity>
+        ) : null}
         <Text style={styles.headerTitle}>{title}</Text>
       </View>
       {/*    {onbtnClick ? (

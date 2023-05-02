@@ -48,6 +48,7 @@ if(NOT CMAKE_INSTALL_LOCAL_ONLY)
   include("/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/3c3g3s64/armeabi-v7a/reactnativemmkv_autolinked_build/cmake_install.cmake")
   include("/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/3c3g3s64/armeabi-v7a/safeareacontext_autolinked_build/cmake_install.cmake")
   include("/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/3c3g3s64/armeabi-v7a/rnscreens_autolinked_build/cmake_install.cmake")
+  include("/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/3c3g3s64/armeabi-v7a/rnsvg_autolinked_build/cmake_install.cmake")
 
 endif()
 
