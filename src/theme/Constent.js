@@ -1,6 +1,8 @@
 import Icon from 'react-native-vector-icons/Ionicons';
+import FontIcon from 'react-native-vector-icons/FontAwesome';
 /* import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
 import Entypo from 'react-native-vector-icons/Entypo'; */
+import { Colors } from './Variables';
 const constent = {
   signUp: 'Sign Up',
   signIn: 'Sign In',
@@ -26,6 +28,7 @@ const navigationScreens = {
 };
 const Icons = {
   Back: <Icon name="arrow-back" size={30} color="#fff" />,
+  send: <FontIcon name="send" size={30} color="#fff" />,
   /*   Profile: <Entypo name="user" color={#fff} size={size} />,
   Home: <MaterialCommunityIcons name="home" color={color} size={size} />, */
 };

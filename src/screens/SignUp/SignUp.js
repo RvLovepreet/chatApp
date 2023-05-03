@@ -117,7 +117,7 @@ const SignUp = ({ navigation }) => {
         <CustomInputFeild
           title={Constent.constent.name}
           required
-          value={userName}
+          values={userName}
           setValues={txt => setUserName(txt)}
           visibility={true}
         />
@@ -126,7 +126,7 @@ const SignUp = ({ navigation }) => {
           required
           setValues={txt => setUserEmail(txt)}
           visibility={true}
-          value={userEmail}
+          values={userEmail}
           error={error.emailErr}
         />
         <CustomInputFeild
@@ -134,14 +134,14 @@ const SignUp = ({ navigation }) => {
           required
           setValues={txt => setUserPassword(txt)}
           visibility={true}
-          value={userPassword}
+          values={userPassword}
           error={error.passwordErr}
         />
         <CustomInputFeild
           title={Constent.constent.mobile}
           required
           setValues={txt => setUserMobile(txt)}
-          value={userMobile}
+          values={userMobile}
           visibility={true}
           error={error.mobileErr}
         />

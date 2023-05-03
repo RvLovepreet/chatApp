@@ -17,33 +17,35 @@ const CustomInputFeild = ({
   required,
   setValues,
   error,
-  value,
+  values,
   icon,
   changeIcon,
   visibility,
   iconsecond,
+  stylesCustom,
 }) => {
   const [focus, setFocus] = useState(false);
   const [err, setErr] = useState(false);
   const [visible, setVisible] = useState(visibility == true ? false : true);
   const check = () => {
-    if (value === undefined) {
+    if (values === undefined) {
       console.log('okk');
     } else {
-      value.length ? setErr(false) : setErr(true);
+      values.length ? setErr(false) : setErr(true);
     }
   };
   const visiblePassword = () => {
     setVisible(!visible);
   };
   return (
-    <View style={[styles.customInputFeildContainer, Gutters]}>
+    <View style={[styles.customInputFeildContainer, stylesCustom, Gutters]}>
       <Text style={styles.customInputFeildLable}>
         {title}
         {required ? <Text style={styles.requiredSign}>*</Text> : null}
       </Text>
       <View style={styles.inputContainer}>
         <TextInput
+          multiline={true}
           onFocus={() => setFocus(true)}
           onBlur={() => {
             setFocus(false);
@@ -56,6 +58,7 @@ const CustomInputFeild = ({
               : styles.customInputFeildOnBlur,
             styles.customInputFeild,
           ]}
+          value={values}
           onChangeText={txt => {
             setValues(txt);
             setErr(false);
@@ -79,6 +82,8 @@ export default CustomInputFeild;
 const styles = StyleSheet.create({
   customInputFeildContainer: {
     position: 'relative',
+    top: 0,
+    left: 0,
     width: '96%',
     height: hp('12%'),
     display: 'flex',

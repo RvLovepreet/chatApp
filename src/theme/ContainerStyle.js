@@ -1,7 +1,7 @@
 import { StyleSheet } from 'react-native';
 import { heightPercentageToDP as hp } from '.';
 export const ContainerStyle = StyleSheet.create({
-  MainContainer: { height: hp('100%') },
+  MainContainer: { flex: 1, height: hp('100%') },
   contentContainer: {
     height: hp('80%'),
     flex: 1,
