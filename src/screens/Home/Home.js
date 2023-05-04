@@ -11,6 +11,7 @@ const Home = ({ navigation }) => {
       />
       <View>
         <CustomGroupComponent
+          title="Group 1"
           onPress={() =>
             navigation.navigate(Constent.navigationScreens.ChatScreen)
           }

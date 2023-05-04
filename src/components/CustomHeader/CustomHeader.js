@@ -1,11 +1,11 @@
 import React from 'react';
-import Icon from 'react-native-vector-icons/Ionicons';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
 } from '../../theme';
 import { FontSize, Colors, NavigationColors } from '../../theme/Variables';
 import { Constent } from '../../theme';
+import { CustomBtn } from '../index';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
 const CustomHeader = ({ title, goToBack, onbtnClick }) => {
   return (
@@ -18,13 +18,13 @@ const CustomHeader = ({ title, goToBack, onbtnClick }) => {
         ) : null}
         <Text style={styles.headerTitle}>{title}</Text>
       </View>
-      {/*    {onbtnClick ? (
+      {onbtnClick ? (
         <CustomBtn
           style={styles.logOutBtn}
-          title={constent.LogOut}
+          title="Log Out"
           onPress={onbtnClick}
         />
-      ) : null} */}
+      ) : null}
     </View>
   );
 };
@@ -54,9 +54,10 @@ const styles = StyleSheet.create({
     fontWeight: '900',
   },
   logOutBtn: {
-    color: '#fff',
+    width: '96%',
+    color: Colors.primary,
     padding: 4,
     borderRadius: 10,
-    backgroundColor: '#fff',
+    backgroundColor: Colors.white,
   },
 });

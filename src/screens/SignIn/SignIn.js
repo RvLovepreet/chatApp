@@ -8,15 +8,17 @@ import { heightPercentageToDP as hp } from '../../theme';
 import { addKey } from '../../store/user';
 import { useDispatch } from 'react-redux';
 import { database } from '../../..';
-const SignIn = ({ navigation }) => {
+import { Constent } from '../../theme';
+const SignIn = ({ navigation, route }) => {
+  const { mobile } = route.params;
   const [userPassword, setUserPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const dispatch = useDispatch();
   const goToNext = async () => {
     const user = await isUser();
     if (user) {
-      console.log('check for mobile', user);
       logInCometChat(user);
+      console.log('check for mobile', user);
       navigation.navigate('Main', { user: user });
     } else {
       console.log('check email and password');
@@ -31,6 +33,7 @@ const SignIn = ({ navigation }) => {
         if (!user) {
           CometChat.login(UID, authKey).then(
             user => {
+              joinningGroup();
               console.log('Login Successful:', { user });
             },
             error => {
@@ -44,12 +47,36 @@ const SignIn = ({ navigation }) => {
       },
     );
   };
+  const alreadyExist = async () => {
+    try {
+      let limit = 30;
+      console.log('already user');
+      let groupsRequest = new CometChat.GroupsRequestBuilder()
+        .setLimit(limit)
+        .joinedOnly(true)
+        .build();
+      const noOfGroups = await groupsRequest.fetchNext();
+      console.log(noOfGroups.length, 'dsfasdfafafa');
+      return noOfGroups.length > 0 ? true : false;
+    } catch (err) {
+      console.log('something is wrong', err);
+    }
+  };
+  const joinningGroup = async () => {
+    var GUID = 'group1';
+    var password = '';
+    var groupType = CometChat.GROUP_TYPE.PUBLIC;
+    try {
+      await CometChat.joinGroup(GUID, groupType, password);
+    } catch (err) {}
+  };
   const isUser = async () => {
     try {
       const users = await database
         .get('user')
         .query(Q.where('email', userEmail), Q.where('password', userPassword));
       console.log(users[0]._raw.mobile, 'chek');
+
       dispatch(addKey(users[0]._raw.mobile));
       return users[0]._raw.mobile;
       /* return users.length ? true : false; */
@@ -72,8 +99,10 @@ const SignIn = ({ navigation }) => {
           title="Password"
           required
           setValues={txt => setUserPassword(txt)}
-          visibility={true}
           values={userPassword}
+          iconsecond={Constent.Icons.eyeOff}
+          icon={Constent.Icons.eye}
+          visibility={false}
         />
 
         <CustomBtn title="sign in" onPress={() => goToNext()} />

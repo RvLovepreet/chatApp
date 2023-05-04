@@ -11,9 +11,6 @@ const HomeNavigation = () => {
       <Stack.Screen
         name={Constent.navigationScreens.ChatScreen}
         component={ChatScreen}
-        options={() => ({
-          tabBarVisible: false,
-        })}
       />
     </Stack.Navigator>
   );

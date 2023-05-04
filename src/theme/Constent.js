@@ -1,7 +1,7 @@
 import Icon from 'react-native-vector-icons/Ionicons';
 import FontIcon from 'react-native-vector-icons/FontAwesome';
-/* import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons';
-import Entypo from 'react-native-vector-icons/Entypo'; */
+/* import MaterialCommunityIcons from 'react-native-vector-icons/MaterialCommunityIcons'; */
+import Entypo from 'react-native-vector-icons/Entypo';
 import { Colors } from './Variables';
 const constent = {
   signUp: 'Sign Up',
@@ -29,8 +29,12 @@ const navigationScreens = {
 const Icons = {
   Back: <Icon name="arrow-back" size={30} color="#fff" />,
   send: <FontIcon name="send" size={30} color="#fff" />,
-  /*   Profile: <Entypo name="user" color={#fff} size={size} />,
-  Home: <MaterialCommunityIcons name="home" color={color} size={size} />, */
+  email: <Icon name="mail" size={30} color="#111" color={Colors.white} />,
+  Phone: <FontIcon name="phone" size={30} color={Colors.white} />,
+  user: <Entypo name="user" size={30} color={Colors.white} />,
+  eye: <Icon name="eye" size={30} color={Colors.text} />,
+  eyeOff: <Icon name="eye-off" size={30} color={Colors.text} />,
+  /*Home: <MaterialCommunityIcons name="home" color={color} size={size} />, */
 };
 const emailregex = /^\w+([\.-]?\w+)*@\w+([\.-]?\w+)*(\.\w\w+)+$/;
 const mobregex = /^(?:(?:\+|0{0,2})91(\s*[\-]\s*)?|[0]?)?[789]\d{9}$/;

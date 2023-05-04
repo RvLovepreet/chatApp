@@ -7,6 +7,7 @@ import {
   KeyboardAvoidingView,
   TouchableWithoutFeedback,
   Keyboard,
+  Platform,
 } from 'react-native';
 import { CometChat } from '@cometchat-pro/react-native-chat';
 import { CustomHeader } from '../../components';
@@ -22,11 +23,9 @@ import { Colors } from '../../theme/Variables';
 const ChatScreen = ({ navigation }) => {
   navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
   const [message, setMessage] = useState('');
+  const [focus, setFocus] = useState(false);
   const [Allmessage, setAllMessage] = useState([]);
   const myId = useSelector(data => data.user);
-  console.log(myId, 'dsfafa');
-  /* console.log('check 1 ', user); */
-  /*   const myId = '9876543210'; */
   useEffect(() => {
     getChat();
     return () =>
@@ -41,15 +40,16 @@ const ChatScreen = ({ navigation }) => {
       .build();
     messagesRequest.fetchPrevious().then(
       messages => {
+        console.log(messages, 'check for messages');
         let mes = messages.map(msg => {
           let obj = {
             message: msg.text,
             sender: msg.rawMessage.sender,
+            time: new Date(msg.rawMessage.sentAt * 1000).toLocaleTimeString(),
           };
           return obj;
         });
         setAllMessage(mes);
-        console.log('Message list fetched:', messages);
       },
       error => {
         console.log('Message fetching failed with error:', error);
@@ -88,7 +88,9 @@ const ChatScreen = ({ navigation }) => {
         title={Constent.constent.group}
         goToBack={() => navigation.goBack()}
       />
-      <View style={ContainerStyle.contentContainer}>
+      <View
+        style={[ContainerStyle.contentContainer, focus ? styles.content : null]}
+      >
         <FlatList
           inverted
           style={styles.listStyle}
@@ -99,18 +101,36 @@ const ChatScreen = ({ navigation }) => {
                 myId={myId}
                 message={item.message}
                 sender={item.sender}
+                time={item.time}
               />
             </>
           )}
         />
-        <KeyboardAvoidingView behavior="padding">
-          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+
+        <KeyboardAvoidingView
+          behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
+          keyboardVerticalOffset={Platform.select({ ios: 100, android: 500 })}
+          /*   style={{
+            flex: 1,
+            backgroundColor: '#ECECEC',
+            borderRadius: 10,
+            flex: 0.95,
+            paddingVertical: 5,
+            marginLeft: 10,
+          }} */
+        >
+          <TouchableWithoutFeedback
+            style={{ flex: 1 }}
+            onPress={Keyboard.dismiss}
+          >
             <View style={styles.sendMessageContainer}>
               <View style={styles.sendMessageInput}>
                 <CustomInputFeild
                   visibility={true}
                   values={message}
                   setValues={txt => setMessage(txt)}
+                  focus1={focus}
+                  setFocus1={setFocus}
                 />
               </View>
               <View style={styles.sendMessageIcon}>
@@ -145,6 +165,9 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
+  },
+  content: {
+    marginBottom: wp('10%'),
   },
 });
 export default ChatScreen;

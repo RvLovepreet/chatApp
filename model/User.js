@@ -8,4 +8,5 @@ export default class User extends Model {
   @field('email') email;
   @field('password') password;
   @field('mobile') mobile;
+  @field('image') image;
 }

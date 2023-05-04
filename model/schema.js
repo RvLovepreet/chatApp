@@ -10,6 +10,7 @@ export const mySchema = appSchema({
         { name: 'email', type: 'string' },
         { name: 'password', type: 'string' },
         { name: 'mobile', type: 'string' },
+        { name: 'image', type: 'string' },
       ],
     }),
   ],

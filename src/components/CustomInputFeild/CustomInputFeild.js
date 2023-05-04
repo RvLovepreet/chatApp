@@ -23,6 +23,8 @@ const CustomInputFeild = ({
   visibility,
   iconsecond,
   stylesCustom,
+  focus1,
+  setFocus1,
 }) => {
   const [focus, setFocus] = useState(false);
   const [err, setErr] = useState(false);
@@ -46,9 +48,17 @@ const CustomInputFeild = ({
       <View style={styles.inputContainer}>
         <TextInput
           multiline={true}
-          onFocus={() => setFocus(true)}
+          onFocus={() => {
+            setFocus(true);
+            {
+              setFocus1 ? setFocus1(true) : null;
+            }
+          }}
           onBlur={() => {
             setFocus(false);
+            {
+              setFocus1 ? setFocus1(false) : null;
+            }
             check();
           }}
           secureTextEntry={visible}

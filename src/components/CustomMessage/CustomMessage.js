@@ -2,7 +2,7 @@ import React from 'react';
 import { View, Text, StyleSheet } from 'react-native';
 import { Colors, FontSize } from '../../theme/Variables';
 
-const CustomMessage = ({ message, sender, myId }) => {
+const CustomMessage = ({ message, sender, time, myId }) => {
   return (
     <View
       style={[
@@ -12,6 +12,7 @@ const CustomMessage = ({ message, sender, myId }) => {
     >
       <Text style={styles.senderStyle}>{sender}</Text>
       <Text style={styles.messageSyle}>{message}</Text>
+      <Text style={styles.timeSyle}>{time}</Text>
     </View>
   );
 };
@@ -45,4 +46,9 @@ const styles = StyleSheet.create({
     fontSize: FontSize.regular,
   },
   messageStyle: { fontSize: FontSize.small },
+  timeSyle: {
+    alignSelf: 'flex-end',
+    fontSize: FontSize.tiny,
+    color: Colors.text,
+  },
 });

@@ -7,11 +7,11 @@ import {
 } from '../../theme';
 import { FontSize, Colors } from '../../theme/Variables';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-const CustomGroupComponent = ({ onPress }) => {
+const CustomGroupComponent = ({ onPress, title }) => {
   return (
     <TouchableOpacity onPress={() => onPress()}>
       <View style={styles.container}>
-        <Text style={styles.content}>Group Component</Text>
+        <Text style={styles.content}>{title}</Text>
       </View>
     </TouchableOpacity>
   );

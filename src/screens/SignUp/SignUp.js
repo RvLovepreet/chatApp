@@ -7,6 +7,7 @@ import {
   ProfileImage,
 } from '../../components';
 import { Constent, ContainerStyle } from '../../theme';
+import { CometChat } from '@cometchat-pro/react-native-chat';
 import AlreadyUser from './utils/AlreadyUser';
 import { database } from '../../..';
 const SignUp = ({ navigation }) => {
@@ -14,7 +15,8 @@ const SignUp = ({ navigation }) => {
   const [userPassword, setUserPassword] = useState('');
   const [userMobile, setUserMobile] = useState('');
   const [userEmail, setUserEmail] = useState('');
-  const [url, setUrl] = useState('');
+  const [userImage, setUserImage] = useState('');
+  /*  const [url, setUrl] = useState(''); */
   const [error, setError] = useState({
     emailErr: '',
     passwordErr: '',
@@ -32,7 +34,7 @@ const SignUp = ({ navigation }) => {
         validation(Constent.constent.mobile)
       ) {
         if (signUp()) {
-          navigation.navigate('SignIn');
+          navigation.navigate('SignIn', { mobile: userMobile });
         } else {
           console.log('you are not valid user');
         }
@@ -52,14 +54,35 @@ const SignUp = ({ navigation }) => {
           user.email = userEmail;
           user.password = userPassword;
           user.mobile = userMobile;
+          user.image = userImage;
         });
       });
+      createUserCometChat();
       console.log('data saved');
       return true;
     } catch (err) {
       console.log(err);
     }
   };
+  const createUserCometChat = () => {
+    const authKey = '398b85520beaa34f2b62fe425376b42bd709b02f';
+    const uid = userMobile;
+    const name = userName;
+
+    var user = new CometChat.User(uid);
+
+    user.setName(name);
+
+    CometChat.createUser(user, authKey).then(
+      user => {
+        console.log('user created', user);
+      },
+      error => {
+        console.log('error', error);
+      },
+    );
+  };
+
   const validation = checktype => {
     switch (checktype) {
       case Constent.constent.password:
@@ -113,7 +136,7 @@ const SignUp = ({ navigation }) => {
     <View style={ContainerStyle.MainContainer}>
       <CustomHeader title={Constent.constent.signUp} />
       <View style={ContainerStyle.contentContainer}>
-        <ProfileImage setUrl={setUrl} url={url} />
+        <ProfileImage setUrl={setUserImage} url={userImage} />
         <CustomInputFeild
           title={Constent.constent.name}
           required
@@ -133,9 +156,11 @@ const SignUp = ({ navigation }) => {
           title={Constent.constent.password}
           required
           setValues={txt => setUserPassword(txt)}
-          visibility={true}
           values={userPassword}
           error={error.passwordErr}
+          iconsecond={Constent.Icons.eyeOff}
+          icon={Constent.Icons.eye}
+          visibility={false}
         />
         <CustomInputFeild
           title={Constent.constent.mobile}
@@ -149,7 +174,9 @@ const SignUp = ({ navigation }) => {
           title={Constent.constent.signUp}
           onPress={() => goToNext()}
         />
-        <AlreadyUser onPress={() => navigation.navigate('SignIn')} />
+        <AlreadyUser
+          onPress={() => navigation.navigate('SignIn', { mobile: userMobile })}
+        />
       </View>
     </View>
   );
