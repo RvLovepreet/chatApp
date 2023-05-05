@@ -7,7 +7,7 @@ const Home = ({ navigation }) => {
     <View>
       <CustomHeader
         title={Constent.constent.Home}
-        goToBack={() => navigation.goBack()}
+        /*     goToBack={() => navigation.goBack()} */
       />
       <View>
         <CustomGroupComponent

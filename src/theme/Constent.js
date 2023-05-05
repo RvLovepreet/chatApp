@@ -14,8 +14,21 @@ const constent = {
   email: 'Email',
   emailError: 'Invalid Email',
   mobile: 'Mobile',
-
   mobileError: 'Invalid Mobile Number',
+};
+
+const commetChat = {
+  group: 'group1',
+  authKey: '398b85520beaa34f2b62fe425376b42bd709b02f',
+};
+
+const databaseVariable = {
+  schemaName: 'user',
+  name: 'name',
+  email: 'email',
+  password: 'password',
+  mobile: 'mobile',
+  image: 'image',
 };
 const navigationScreens = {
   Home: 'Home',
@@ -51,4 +64,6 @@ export default {
   constent,
   Icons,
   navigationScreens,
+  commetChat,
+  databaseVariable,
 };

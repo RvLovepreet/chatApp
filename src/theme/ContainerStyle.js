@@ -8,5 +8,6 @@ export const ContainerStyle = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'flex-start',
     paddingTop: hp('2%'),
+    paddingBottom: hp('2%'),
   },
 });

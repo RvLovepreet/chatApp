@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import {
   View,
   TouchableOpacity,
@@ -21,34 +21,46 @@ import {
 } from '../../theme';
 import { Colors } from '../../theme/Variables';
 const ChatScreen = ({ navigation }) => {
-  navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
+  const flatlistRef = useRef();
+
   const [message, setMessage] = useState('');
   const [focus, setFocus] = useState(false);
   const [Allmessage, setAllMessage] = useState([]);
   const myId = useSelector(data => data.user);
   useEffect(() => {
+    navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
     getChat();
+    /* setTimeout(() => {
+      flatlistRef.current.scrollToEnd({ animated: false });
+    }, 1000); */
     return () =>
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'flex' } });
   }, []);
+
   const getChat = () => {
-    let GUID = 'group1';
-    let limit = 30;
+    let GUID = Constent.commetChat.group;
+    let limit = 15;
     let messagesRequest = new CometChat.MessagesRequestBuilder()
       .setGUID(GUID)
       .setLimit(limit)
       .build();
     messagesRequest.fetchPrevious().then(
       messages => {
-        console.log(messages, 'check for messages');
+        console.log(messages, 'chat messages');
         let mes = messages.map(msg => {
           let obj = {
             message: msg.text,
             sender: msg.rawMessage.sender,
-            time: new Date(msg.rawMessage.sentAt * 1000).toLocaleTimeString(),
+            date: new Date(msg.rawMessage.sentAt * 1000).toDateString(),
+            hours: [
+              new Date(msg.rawMessage.sentAt * 1000).getHours(),
+              new Date(msg.rawMessage.sentAt * 1000).getMinutes(),
+            ],
           };
           return obj;
         });
+        /* createNewList(mes); */
+        console.log(mes, 'messages');
         setAllMessage(mes);
       },
       error => {
@@ -59,7 +71,7 @@ const ChatScreen = ({ navigation }) => {
   const sendMessage = () => {
     if (message?.length) {
       console.log(message);
-      let receiverID = 'group1';
+      let receiverID = Constent.commetChat.group;
       let messageText = message;
       let receiverType = CometChat.RECEIVER_TYPE.GROUP;
       let textMessage = new CometChat.TextMessage(
@@ -81,7 +93,38 @@ const ChatScreen = ({ navigation }) => {
       console.log('empty message');
     }
   };
-
+  const getDay = date => {
+    const date1 = new Date(date).getDate();
+    const today = new Date().getDate();
+    const yesterday = new Date().getDate() - 1;
+    if (date1 === today) {
+      return 'Today';
+    } else if (date1 === yesterday) {
+      return 'Yesterday';
+    } else {
+      return new Date(date).toLocaleDateString();
+    }
+    /* console.log(date1, 'dsafdsfa');
+    return null; */
+  };
+  const checkDate = (index, date1, arr, message) => {
+    /*  console.log(index, 'index'); */
+    /*  if (index === 0) {
+      console.log(index, 'in 0 ', message);
+      return getDay(arr[index].date);
+    } */
+    if (index === arr.length - 1) {
+      console.log(index, 'in if', message);
+      return getDay(arr[index].date);
+    } else if (index > 0) {
+      console.log(index, 'in else', message);
+      const indx =
+        new Date(arr[index].date).getDate() -
+        new Date(arr[index - 1].date).getDate();
+      const date = indx == 0 ? null : getDay(arr[index - 1].date);
+      return date;
+    }
+  };
   return (
     <View style={ContainerStyle.MainContainer}>
       <CustomHeader
@@ -89,7 +132,11 @@ const ChatScreen = ({ navigation }) => {
         goToBack={() => navigation.goBack()}
       />
       <View
-        style={[ContainerStyle.contentContainer, focus ? styles.content : null]}
+        style={[
+          ContainerStyle.contentContainer,
+          styles.contentContainer,
+          focus ? styles.content : null,
+        ]}
       >
         <FlatList
           inverted
@@ -101,7 +148,9 @@ const ChatScreen = ({ navigation }) => {
                 myId={myId}
                 message={item.message}
                 sender={item.sender}
-                time={item.time}
+                time={item.hours}
+                arr={[...Allmessage].reverse()}
+                date1={checkDate(index, item.date, Allmessage, item.message)}
               />
             </>
           )}
@@ -110,14 +159,6 @@ const ChatScreen = ({ navigation }) => {
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.select({ ios: 100, android: 500 })}
-          /*   style={{
-            flex: 1,
-            backgroundColor: '#ECECEC',
-            borderRadius: 10,
-            flex: 0.95,
-            paddingVertical: 5,
-            marginLeft: 10,
-          }} */
         >
           <TouchableWithoutFeedback
             style={{ flex: 1 }}
@@ -127,10 +168,12 @@ const ChatScreen = ({ navigation }) => {
               <View style={styles.sendMessageInput}>
                 <CustomInputFeild
                   visibility={true}
-                  values={message}
+                  value={message}
                   setValues={txt => setMessage(txt)}
                   focus1={focus}
                   setFocus1={setFocus}
+                  multiline={true}
+                  style1={styles.messageInput}
                 />
               </View>
               <View style={styles.sendMessageIcon}>
@@ -166,8 +209,15 @@ const styles = StyleSheet.create({
     justifyContent: 'center',
     backgroundColor: Colors.primary,
   },
+  contentContainer: {
+    paddingTop: 0,
+  },
   content: {
     marginBottom: wp('10%'),
+  },
+  messageInput: {
+    height: 100,
+    background: 'red',
   },
 });
 export default ChatScreen;

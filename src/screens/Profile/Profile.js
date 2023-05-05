@@ -18,6 +18,7 @@ const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
   const [user, getUser] = useState({});
   const mobile = useSelector(data => data.user);
+  console.log(mobile, 'chkec for mobile');
   useEffect(() => {
     getUserInfo();
   }, []);
@@ -31,11 +32,10 @@ const Profile = ({ navigation }) => {
       console.log(err);
     }
   };
-  const logOut = () => {
+  const logOut = async () => {
     dispatch(removeKey(''));
-    CometChat.logout()
-      .then(message => navigation.popToTop())
-      .catch(err => console.log('user Log OUt fail'));
+    await CometChat.logout();
+    navigation.navigate(Constent.navigationScreens.SignUp);
   };
   return (
     <View style={ContainerStyle.MainContainer}>

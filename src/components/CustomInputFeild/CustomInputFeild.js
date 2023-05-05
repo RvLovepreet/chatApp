@@ -17,7 +17,7 @@ const CustomInputFeild = ({
   required,
   setValues,
   error,
-  values,
+  value,
   icon,
   changeIcon,
   visibility,
@@ -25,15 +25,16 @@ const CustomInputFeild = ({
   stylesCustom,
   focus1,
   setFocus1,
+  multiline,
 }) => {
   const [focus, setFocus] = useState(false);
   const [err, setErr] = useState(false);
-  const [visible, setVisible] = useState(visibility == true ? false : true);
+  const [visible, setVisible] = useState(visibility === true ? false : true);
   const check = () => {
-    if (values === undefined) {
+    if (value === undefined) {
       console.log('okk');
     } else {
-      values.length ? setErr(false) : setErr(true);
+      value.length ? setErr(false) : setErr(true);
     }
   };
   const visiblePassword = () => {
@@ -47,7 +48,7 @@ const CustomInputFeild = ({
       </Text>
       <View style={styles.inputContainer}>
         <TextInput
-          multiline={true}
+          multiline={multiline}
           onFocus={() => {
             setFocus(true);
             {
@@ -68,7 +69,7 @@ const CustomInputFeild = ({
               : styles.customInputFeildOnBlur,
             styles.customInputFeild,
           ]}
-          value={values}
+          value={value}
           onChangeText={txt => {
             setValues(txt);
             setErr(false);
@@ -82,7 +83,7 @@ const CustomInputFeild = ({
       </View>
 
       <Text style={{ height: 15 }}>
-        {err ? <Text style={styles.checkText}>required</Text> : null}
+        {err && error ? <Text style={styles.checkText}>Required</Text> : null}
         <Text style={styles.checkText}>{error}</Text>
       </Text>
     </View>

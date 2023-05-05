@@ -16,7 +16,6 @@ const SignUp = ({ navigation }) => {
   const [userMobile, setUserMobile] = useState('');
   const [userEmail, setUserEmail] = useState('');
   const [userImage, setUserImage] = useState('');
-  /*  const [url, setUrl] = useState(''); */
   const [error, setError] = useState({
     emailErr: '',
     passwordErr: '',
@@ -34,19 +33,23 @@ const SignUp = ({ navigation }) => {
         validation(Constent.constent.mobile)
       ) {
         if (signUp()) {
-          navigation.navigate('SignIn', { mobile: userMobile });
+          navigation.navigate(Constent.navigationScreens.SignIn, {
+            mobile: userMobile,
+          });
         } else {
-          console.log('you are not valid user');
+          alert('you are not valid user');
         }
       } else {
-        console.log('i am in else');
+        alert('Check your password and email');
       }
     } catch (err) {
-      console.log(err);
+      alert('something is wrong');
     }
   };
   const signUp = async () => {
-    const users = database.collections.get('user');
+    const users = database.collections.get(
+      Constent.databaseVariable.schemaName,
+    );
     try {
       await database.write(async () => {
         await users.create(user => {
@@ -58,14 +61,13 @@ const SignUp = ({ navigation }) => {
         });
       });
       createUserCometChat();
-      console.log('data saved');
       return true;
     } catch (err) {
       console.log(err);
     }
   };
   const createUserCometChat = () => {
-    const authKey = '398b85520beaa34f2b62fe425376b42bd709b02f';
+    const authKey = Constent.commetChat.authKey;
     const uid = userMobile;
     const name = userName;
 
@@ -75,7 +77,7 @@ const SignUp = ({ navigation }) => {
 
     CometChat.createUser(user, authKey).then(
       user => {
-        console.log('user created', user);
+        console.log(user);
       },
       error => {
         console.log('error', error);
@@ -175,7 +177,11 @@ const SignUp = ({ navigation }) => {
           onPress={() => goToNext()}
         />
         <AlreadyUser
-          onPress={() => navigation.navigate('SignIn', { mobile: userMobile })}
+          onPress={() =>
+            navigation.navigate(Constent.navigationScreens.SignIn, {
+              mobile: userMobile,
+            })
+          }
         />
       </View>
     </View>
