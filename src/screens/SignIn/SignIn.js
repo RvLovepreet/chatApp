@@ -1,26 +1,32 @@
 import React, { useState } from 'react';
 import { CometChat } from '@cometchat-pro/react-native-chat';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
 import { Q } from '@nozbe/watermelondb';
-import { View } from 'react-native';
+import { View, TouchableWithoutFeedback, Keyboard } from 'react-native';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../../theme';
 import { CustomInputFeild, CustomHeader, CustomBtn } from '../../components';
 import { ContainerStyle } from '../../theme';
 import { addKey } from '../../store/user';
 import { useDispatch } from 'react-redux';
 import { database } from '../../..';
 import { Constent } from '../../theme';
-const SignIn = ({ navigation, route }) => {
-  const { mobile } = route.params;
+const SignIn = ({ navigation }) => {
   const [userPassword, setUserPassword] = useState('');
   const [userEmail, setUserEmail] = useState('');
+  const [toggle, setToggle] = useState(false);
   const dispatch = useDispatch();
   const goToNext = async () => {
     try {
       const user = await isUser();
+      console.log(user, 'helllo dsaf');
       if (user) {
         logInCometChat(user);
         navigation.navigate(Constent.navigationScreens.Main);
       } else {
-        alert('check email and password');
+        alert(' 1 check email and password');
       }
     } catch (err) {
       alert('check email and password');
@@ -66,43 +72,55 @@ const SignIn = ({ navigation, route }) => {
           Q.where(Constent.databaseVariable.email, userEmail),
           Q.where(Constent.databaseVariable.password, userPassword),
         );
-      dispatch(addKey(users[0]._raw.mobile));
+      const key = users[0]._raw.mobile;
+      console.log(key, 'key for redux');
+      dispatch(addKey(key));
+      console.log(key, 'key for redux 1');
       return users[0]._raw.mobile;
       /* return users.length ? true : false; */
     } catch (err) {
       console.log(err);
     }
   };
-  return (
-    <View style={ContainerStyle.MainContainer}>
-      <CustomHeader
-        title={Constent.constent.signIn}
-        goToBack={() => navigation.goBack()}
-      />
-      <View style={ContainerStyle.contentContainer}>
-        <CustomInputFeild
-          title={Constent.constent.email}
-          required
-          setValues={txt => setUserEmail(txt)}
-          visibility={true}
-          values={userEmail}
-        />
-        <CustomInputFeild
-          title={Constent.constent.password}
-          required
-          setValues={txt => setUserPassword(txt)}
-          value={userPassword}
-          iconsecond={Constent.Icons.eyeOff}
-          icon={Constent.Icons.eye}
-          visibility={false}
-        />
 
-        <CustomBtn
+  return (
+    <KeyboardAwareScrollView>
+      <View style={ContainerStyle.MainContainer}>
+        <CustomHeader
           title={Constent.constent.signIn}
-          onPress={() => goToNext()}
+          goToBack={() => {
+            /*       console.log('ehldsfas'); */
+            navigation.goBack();
+          }}
         />
+        <View style={[ContainerStyle.contentContainer]}>
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <View>
+              <CustomInputFeild
+                title={Constent.constent.email}
+                required
+                setValues={txt => setUserEmail(txt)}
+                values={userEmail}
+                visibility={true}
+              />
+              <CustomInputFeild
+                title={Constent.constent.password}
+                required
+                setValues={txt => setUserPassword(txt)}
+                values={userPassword}
+                iconsecond={Constent.Icons.eyeOff}
+                icon={Constent.Icons.eye}
+              />
+
+              <CustomBtn
+                title={Constent.constent.signIn}
+                onPress={() => goToNext()}
+              />
+            </View>
+          </TouchableWithoutFeedback>
+        </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
 export default SignIn;

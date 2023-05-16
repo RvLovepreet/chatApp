@@ -13,5 +13,17 @@ export const mySchema = appSchema({
         { name: 'image', type: 'string' },
       ],
     }),
+    tableSchema({
+      name: 'chat',
+      columns: [
+        { name: 'message', type: 'string' },
+        { name: 'sender', type: 'string' },
+        { name: 'messageid', type: 'string' },
+        { name: 'date', type: 'string' },
+        { name: 'hours', type: 'number' },
+        { name: 'minutes', type: 'number' },
+        { name: 'sentAt', type: 'number' },
+      ],
+    }),
   ],
 });

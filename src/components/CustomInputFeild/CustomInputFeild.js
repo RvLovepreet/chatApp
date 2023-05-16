@@ -5,13 +5,14 @@ import {
   Text,
   StyleSheet,
   TouchableOpacity,
+  Dimensions,
 } from 'react-native';
 import {
   widthPercentageToDP as wp,
   heightPercentageToDP as hp,
-  Gutters,
 } from '../../theme';
 import { Colors, FontSize } from '../../theme/Variables';
+const { height, width } = Dimensions.get('window');
 const CustomInputFeild = ({
   title,
   required,
@@ -19,12 +20,11 @@ const CustomInputFeild = ({
   error,
   value,
   icon,
-  changeIcon,
   visibility,
   iconsecond,
-  stylesCustom,
-  focus1,
-  setFocus1,
+  customStyle,
+  // focus1,
+  // setFocus1,
   multiline,
 }) => {
   const [focus, setFocus] = useState(false);
@@ -41,34 +41,39 @@ const CustomInputFeild = ({
     setVisible(!visible);
   };
   return (
-    <View style={[styles.customInputFeildContainer, stylesCustom, Gutters]}>
-      <Text style={styles.customInputFeildLable}>
-        {title}
-        {required ? <Text style={styles.requiredSign}>*</Text> : null}
-      </Text>
+    <View style={[styles.customInputFeildContainer]}>
+      {title ? (
+        <Text style={styles.customInputFeildLable}>
+          {title}
+          {required ? <Text style={styles.requiredSign}>*</Text> : null}
+        </Text>
+      ) : null}
       <View style={styles.inputContainer}>
         <TextInput
           multiline={multiline}
           onFocus={() => {
-            setFocus(true);
-            {
-              setFocus1 ? setFocus1(true) : null;
-            }
+            // setFocus(true);
+            // {
+            //   setFocus1 ? setFocus1(true) : null;
+            // }
           }}
           onBlur={() => {
-            setFocus(false);
-            {
-              setFocus1 ? setFocus1(false) : null;
-            }
-            check();
+            // setFocus(false);
+            // {
+            //   setFocus1 ? setFocus1(false) : null;
+            // }
+            // check();
           }}
           secureTextEntry={visible}
-          style={[
-            focus
-              ? styles.customInputFeildFocus
-              : styles.customInputFeildOnBlur,
-            styles.customInputFeild,
-          ]}
+          style={
+            [styles.inputFieldStyle, customStyle]
+            //   [
+            //   // focus
+            //   //   ? styles.customInputFeildFocus
+            //   //   : styles.customInputFeildOnBlur,
+            //   // styles.customInputFeild(focus),
+            // ]
+          }
           value={value}
           onChangeText={txt => {
             setValues(txt);
@@ -81,33 +86,31 @@ const CustomInputFeild = ({
           </TouchableOpacity>
         ) : null}
       </View>
-
-      <Text style={{ height: 15 }}>
-        {err && error ? <Text style={styles.checkText}>Required</Text> : null}
-        <Text style={styles.checkText}>{error}</Text>
-      </Text>
+      {error ? (
+        <Text style={{ height: 15 }}>
+          {error && err ? <Text style={styles.checkText}>Required</Text> : null}
+          <Text style={styles.checkText}>{error}</Text>
+        </Text>
+      ) : null}
     </View>
   );
 };
 export default CustomInputFeild;
 const styles = StyleSheet.create({
   customInputFeildContainer: {
-    position: 'relative',
-    top: 0,
-    left: 0,
-    width: '96%',
+    flex: 1,
+
+    /*       width: '96%',
     height: hp('12%'),
-    display: 'flex',
     marginTop: hp('.5%'),
     marginLeft: wp('3%'),
     marginBottom: hp('.5%'),
-    justifyContent: 'space-between',
+    justifyContent: 'space-between', */
   },
   inputContainer: {
-    display: 'flex',
+    flex: 1,
     flexDirection: 'row',
-    width: '98%',
-    height: hp('6%'),
+    alignItems: 'center',
   },
   customInputFeildLable: {
     color: '#111',
@@ -116,28 +119,37 @@ const styles = StyleSheet.create({
   iconStyle: {
     position: 'absolute',
     alignSelf: 'center',
-    right: wp('4%'),
+    right: 4,
   },
   requiredSign: {
     color: 'red',
     fontSize: FontSize.regular,
   },
-  customInputFeildOnBlur: {
+  // customInputFeild: (value)=>{
+  //  return {borderWidth: 1,
+  //   borderColor: value ?  Colors.primary : "black",}
+  // },
+  inputFieldStyle: {
+    height: height * 0.1,
+    width: width * 0.9,
     borderWidth: 1,
-  },
-  customInputFeildFocus: {
-    borderWidth: 1,
-    borderColor: Colors.primary,
-  },
-  customInputFeild: {
-    backgroundColor: Colors.inputBackground,
-    height: '100%',
-    fontSize: FontSize.regular,
-    paddingLeft: wp('3%'),
-    color: '#111',
-    flex: 1,
-    alignItems: 'center',
     borderRadius: 4,
+  },
+  customInputFeild: value => {
+    return {
+      borderWidth: 1,
+      width: '100%',
+      height: '10%',
+      alignItems: 'center',
+      borderColor: value ? Colors.primary : 'black',
+      backgroundColor: Colors.inputBackground,
+      fontSize: FontSize.regular,
+
+      // paddingLeft: wp('3%'),
+      color: '#111',
+      /*    flex: 1, */
+      borderRadius: 4,
+    };
   },
   validationText: {
     color: 'red',

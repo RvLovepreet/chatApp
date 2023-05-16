@@ -9,6 +9,8 @@ const CustomMessage = ({
   message,
   sender,
   time,
+  hours,
+  minutes,
   myId,
   date,
   index,
@@ -29,7 +31,6 @@ const CustomMessage = ({
     const today = new Date().getDate();
     const yesterday = new Date().getDate() - 1;
     if (date1 === today) {
-      console.log('todday');
       return 'Today';
     } else if (date1 === yesterday) {
       return 'Yesterday';
@@ -40,37 +41,48 @@ const CustomMessage = ({
     return null; */
   };
   const checkDate = () => {
-    console.log(arr.length, 'index');
-    console.log(index, message, 'hjello');
-    if (index == arr.length - 1) {
-      console.log('dsfaefjdsk');
+    /*   if (index == arr.length - 1) {
+      console.log('I am in at last index');
+      console.log(getDay(arr[index].date));
+      console.log(arr.length, 'length', index, 'index', message, 'message');
+      console.log('I am in at last index return last index');
       return getDay(arr[index].date);
-    } else if (index > 0) {
-      const indx =
-        new Date(arr[index].date).getDate() -
-        new Date(arr[index - 1].date).getDate();
-      const date2 = indx == 0 ? null : getDay(arr[index - 1].date);
+    } else */ if (index > 0) {
+      let date2;
+      /*  if (index == 0) {
+        const indx =
+          new Date(arr[index].date).getDate() -
+          new Date(arr[index + 1].date).getDate();
+        date2 = indx == 0 ? null : getDay(arr[index].date);
+      } /* */ if (index > 0) {
+        const indx =
+          new Date(arr[index].date).getDate() -
+          new Date(arr[index - 1].date).getDate();
+        date2 = indx == 0 ? null : getDay(arr[index - 1].date);
+      }
       return date2;
     }
   };
+
   return (
     <>
-      {date1 ? (
+      {checkDate() ? (
         <View style={styles.messageDateContainer}>
-          <Text style={styles.messageDate}>{date1}</Text>
           <Text style={styles.messageDate}>{checkDate()}</Text>
         </View>
       ) : null}
-      <View
-        style={[
-          styles.messageContainer,
-          sender === myId ? styles.sender : styles.receiver,
-        ]}
-      >
-        <Text style={styles.senderStyle}>{sender}</Text>
-        <Text style={styles.messageSyle}>{message}</Text>
-        <Text style={styles.messageSyle}>{date}</Text>
-        <Text style={styles.timeSyle}>{getTime(time[0], time[1])}</Text>
+      <View>
+        <View
+          style={[
+            styles.messageContainer,
+            sender === myId ? styles.sender : styles.receiver,
+          ]}
+        >
+          <Text style={styles.senderStyle}>{sender}</Text>
+          <Text style={styles.messageSyle}>{message}</Text>
+          <Text style={styles.messageSyle}>{date}</Text>
+          <Text style={styles.timeSyle}>{getTime(hours, minutes)}</Text>
+        </View>
       </View>
     </>
   );

@@ -7,7 +7,7 @@ import { FontSize, Colors, NavigationColors } from '../../theme/Variables';
 import { Constent } from '../../theme';
 import { CustomBtn } from '../index';
 import { View, Text, StyleSheet, TouchableOpacity } from 'react-native';
-const CustomHeader = ({ title, goToBack, onbtnClick }) => {
+const CustomHeader = ({ title, goToBack, onbtnClick, customStyleForBtn }) => {
   return (
     <View style={styles.headerContainer}>
       <View style={styles.headerContent}>
@@ -15,12 +15,15 @@ const CustomHeader = ({ title, goToBack, onbtnClick }) => {
           <TouchableOpacity onPress={goToBack}>
             <Text>{Constent.Icons.Back}</Text>
           </TouchableOpacity>
-        ) : null}
+        ) : (
+          <></>
+        )}
         <Text style={styles.headerTitle}>{title}</Text>
       </View>
       {onbtnClick ? (
         <CustomBtn
-          style={styles.logOutBtn}
+          style={customStyleForBtn}
+          /*  customStyle={} */
           title="Log Out"
           onPress={onbtnClick}
         />

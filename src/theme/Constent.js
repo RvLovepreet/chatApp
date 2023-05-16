@@ -24,6 +24,7 @@ const commetChat = {
 
 const databaseVariable = {
   schemaName: 'user',
+  schemaChat: 'chat',
   name: 'name',
   email: 'email',
   password: 'password',

@@ -17,7 +17,7 @@ import { useSelector } from 'react-redux';
 const Profile = ({ navigation }) => {
   const dispatch = useDispatch();
   const [user, getUser] = useState({});
-  const mobile = useSelector(data => data.user);
+  const mobile = useSelector(data => data.user.key);
   console.log(mobile, 'chkec for mobile');
   useEffect(() => {
     getUserInfo();
@@ -39,7 +39,17 @@ const Profile = ({ navigation }) => {
   };
   return (
     <View style={ContainerStyle.MainContainer}>
-      <CustomHeader title="Profile" onbtnClick={() => logOut()} />
+      <CustomHeader
+        title="Profile"
+        customStyleForBtn={{
+          width: '30%',
+          height: '80%',
+          borderWidth: 2,
+          borderColor: '#fff',
+          borderRaduis: 100,
+        }}
+        onbtnClick={() => logOut()}
+      />
       <View style={ContainerStyle.contentContainer}>
         <Image
           style={styles.ImageContainer}

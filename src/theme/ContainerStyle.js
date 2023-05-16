@@ -1,13 +1,15 @@
 import { StyleSheet } from 'react-native';
-import { heightPercentageToDP as hp } from '.';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../theme';
 export const ContainerStyle = StyleSheet.create({
-  MainContainer: { flex: 1, height: hp('100%') },
+  MainContainer: { flex: 1 },
   contentContainer: {
-    height: hp('80%'),
     flex: 1,
     alignItems: 'center',
     justifyContent: 'flex-start',
-    paddingTop: hp('2%'),
-    paddingBottom: hp('2%'),
+    paddingTop: hp('0'),
+    paddingBottom: hp('0'),
   },
 });

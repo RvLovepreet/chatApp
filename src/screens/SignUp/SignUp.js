@@ -1,5 +1,15 @@
 import React, { useState } from 'react';
-import { View, Text } from 'react-native';
+import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view';
+import {
+  View,
+  KeyboardAvoidingView,
+  TouchableWithoutFeedback,
+  Keyboard,
+  Platform,
+  StyleSheet,
+  ScrollView,
+} from 'react-native';
+import { Q } from '@nozbe/watermelondb';
 import {
   CustomInputFeild,
   CustomHeader,
@@ -7,10 +17,16 @@ import {
   ProfileImage,
 } from '../../components';
 import { Constent, ContainerStyle } from '../../theme';
+import {
+  widthPercentageToDP as wp,
+  heightPercentageToDP as hp,
+} from '../../theme';
 import { CometChat } from '@cometchat-pro/react-native-chat';
 import AlreadyUser from './utils/AlreadyUser';
 import { database } from '../../..';
+import { TextInput } from 'react-native-gesture-handler';
 const SignUp = ({ navigation }) => {
+  const [focus, setFocus] = useState(false);
   const [userName, setUserName] = useState('');
   const [userPassword, setUserPassword] = useState('');
   const [userMobile, setUserMobile] = useState('');
@@ -21,7 +37,7 @@ const SignUp = ({ navigation }) => {
     passwordErr: '',
     mobileErr: '',
   });
-  const goToNext = () => {
+  const goToNext = async () => {
     try {
       if (
         userName?.length &&
@@ -32,12 +48,13 @@ const SignUp = ({ navigation }) => {
         validation(Constent.constent.password) &&
         validation(Constent.constent.mobile)
       ) {
-        if (signUp()) {
+        const flag = await signUp();
+        if (flag) {
           navigation.navigate(Constent.navigationScreens.SignIn, {
             mobile: userMobile,
           });
         } else {
-          alert('you are not valid user');
+          alert('User Already Exist valid user');
         }
       } else {
         alert('Check your password and email');
@@ -46,22 +63,38 @@ const SignUp = ({ navigation }) => {
       alert('something is wrong');
     }
   };
+  const userExist = async () => {
+    try {
+      const users = await database
+        .get(Constent.databaseVariable.schemaName)
+        .query(Q.where(Constent.databaseVariable.email, userEmail));
+      return users.length ? true : false;
+    } catch (err) {
+      return false;
+    }
+  };
   const signUp = async () => {
     const users = database.collections.get(
       Constent.databaseVariable.schemaName,
     );
     try {
-      await database.write(async () => {
-        await users.create(user => {
-          user.name = userName;
-          user.email = userEmail;
-          user.password = userPassword;
-          user.mobile = userMobile;
-          user.image = userImage;
+      const flag = await userExist();
+      if (!flag) {
+        await database.write(async () => {
+          await users.create(user => {
+            user.name = userName;
+            user.email = userEmail;
+            user.password = userPassword;
+            user.mobile = userMobile;
+            user.image = userImage;
+          });
         });
-      });
-      createUserCometChat();
-      return true;
+        createUserCometChat();
+        return true;
+      } else {
+        console.log('user alredayexist ');
+        return false;
+      }
     } catch (err) {
       console.log(err);
     }
@@ -135,56 +168,78 @@ const SignUp = ({ navigation }) => {
   };
 
   return (
-    <View style={ContainerStyle.MainContainer}>
-      <CustomHeader title={Constent.constent.signUp} />
-      <View style={ContainerStyle.contentContainer}>
-        <ProfileImage setUrl={setUserImage} url={userImage} />
-        <CustomInputFeild
-          title={Constent.constent.name}
-          required
-          values={userName}
-          setValues={txt => setUserName(txt)}
-          visibility={true}
-        />
-        <CustomInputFeild
-          title={Constent.constent.email}
-          required
-          setValues={txt => setUserEmail(txt)}
-          visibility={true}
-          values={userEmail}
-          error={error.emailErr}
-        />
-        <CustomInputFeild
-          title={Constent.constent.password}
-          required
-          setValues={txt => setUserPassword(txt)}
-          values={userPassword}
-          error={error.passwordErr}
-          iconsecond={Constent.Icons.eyeOff}
-          icon={Constent.Icons.eye}
-          visibility={false}
-        />
-        <CustomInputFeild
-          title={Constent.constent.mobile}
-          required
-          setValues={txt => setUserMobile(txt)}
-          values={userMobile}
-          visibility={true}
-          error={error.mobileErr}
-        />
-        <CustomBtn
-          title={Constent.constent.signUp}
-          onPress={() => goToNext()}
-        />
-        <AlreadyUser
-          onPress={() =>
-            navigation.navigate(Constent.navigationScreens.SignIn, {
-              mobile: userMobile,
-            })
-          }
-        />
+    <KeyboardAwareScrollView>
+      <View style={ContainerStyle.MainContainer}>
+        <CustomHeader title={Constent.constent.signUp} />
+        <View
+          style={[
+            ContainerStyle.contentContainer /* , focus ? styles.content : null */,
+          ]}
+        >
+          <TouchableWithoutFeedback onPress={Keyboard.dismiss}>
+            <>
+              <ProfileImage setUrl={setUserImage} url={userImage} />
+              <CustomInputFeild
+                title={Constent.constent.name}
+                required
+                values={userName}
+                setValues={txt => setUserName(txt)}
+                visibility={true}
+              />
+              <CustomInputFeild
+                title={Constent.constent.email}
+                required
+                setValues={txt => setUserEmail(txt)}
+                visibility={true}
+                values={userEmail}
+                error={error.emailErr}
+              />
+              <CustomInputFeild
+                title={Constent.constent.password}
+                required
+                setValues={txt => setUserPassword(txt)}
+                values={userPassword}
+                error={error.passwordErr}
+                iconsecond={Constent.Icons.eyeOff}
+                icon={Constent.Icons.eye}
+                visibility={false}
+              />
+              <CustomInputFeild
+                title={Constent.constent.mobile}
+                required
+                setValues={txt => setUserMobile(txt)}
+                values={userMobile}
+                visibility={true}
+                error={error.mobileErr}
+                /*  setFocus1={setFocus} */
+              />
+
+              <CustomBtn
+                title={Constent.constent.signUp}
+                onPress={() => goToNext()}
+              />
+              <AlreadyUser
+                onPress={() =>
+                  navigation.navigate(Constent.navigationScreens.SignIn)
+                }
+              />
+            </>
+          </TouchableWithoutFeedback>
+          {/*     </ScrollView> */}
+        </View>
       </View>
-    </View>
+    </KeyboardAwareScrollView>
   );
 };
+const styles = StyleSheet.create({
+  Fields: {
+    flex: 1,
+    alignItems: 'center',
+    width: '100%',
+    borderWidth: 1,
+  },
+  content: {
+    marginBottom: wp('10%'),
+  },
+});
 export default SignUp;

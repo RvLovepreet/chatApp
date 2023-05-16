@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Image, StyleSheet, TouchableOpacity, Text } from 'react-native';
+import { Image, StyleSheet, View, TouchableOpacity, Text } from 'react-native';
 import ImagePicker from 'react-native-image-crop-picker';
 const ProfileImage = ({ setUrl, url }) => {
   const uploadImage = () => {
@@ -13,7 +13,7 @@ const ProfileImage = ({ setUrl, url }) => {
   };
 
   return (
-    <>
+    <View>
       <TouchableOpacity onPress={() => uploadImage()}>
         <Image
           style={styles.ImageStyle}
@@ -25,7 +25,7 @@ const ProfileImage = ({ setUrl, url }) => {
         />
         {url ? null : <Text> Upload image</Text>}
       </TouchableOpacity>
-    </>
+    </View>
   );
 };
 

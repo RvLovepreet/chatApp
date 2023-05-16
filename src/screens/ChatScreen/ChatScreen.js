@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import { Q } from '@nozbe/watermelondb';
 import {
   View,
   TouchableOpacity,
@@ -10,7 +11,7 @@ import {
   Platform,
 } from 'react-native';
 import { CometChat } from '@cometchat-pro/react-native-chat';
-import { CustomHeader } from '../../components';
+import { CustomHeader, CustomLoader } from '../../components';
 import { useSelector } from 'react-redux';
 import { Constent } from '../../theme';
 import { CustomInputFeild, CustomMessage } from '../../components';
@@ -20,54 +21,213 @@ import {
   heightPercentageToDP as hp,
 } from '../../theme';
 import { Colors } from '../../theme/Variables';
-const ChatScreen = ({ navigation }) => {
-  const flatlistRef = useRef();
+import { database } from '../../..';
 
+const ChatScreen = ({ navigation }) => {
+  const [loader, setLoader] = useState(true);
   const [message, setMessage] = useState('');
   const [focus, setFocus] = useState(false);
   const [Allmessage, setAllMessage] = useState([]);
-  const myId = useSelector(data => data.user);
+  const [messageId, setMessageId] = useState(0);
+  const [messageLoader, setMessageLoader] = useState(false);
+  const [flatListRef, setFlatListRef] = useState(null);
+  const myId = useSelector(data => data.user.key);
+
+  const GUID = Constent.commetChat.group;
+  let limit = 12;
+  let LastMessage = 0;
   useEffect(() => {
     navigation.getParent()?.setOptions({ tabBarStyle: { display: 'none' } });
-    getChat();
-    /* setTimeout(() => {
-      flatlistRef.current.scrollToEnd({ animated: false });
-    }, 1000); */
-    return () =>
+    realTimeMessage();
+    alreadyMessage();
+    /*     getChat(); */
+    return () => {
+      let listenerID = GUID;
+      CometChat.removeMessageListener(listenerID);
       navigation.getParent()?.setOptions({ tabBarStyle: { display: 'flex' } });
+    };
   }, []);
 
-  const getChat = () => {
-    let GUID = Constent.commetChat.group;
-    let limit = 15;
-    let messagesRequest = new CometChat.MessagesRequestBuilder()
-      .setGUID(GUID)
-      .setLimit(limit)
-      .build();
-    messagesRequest.fetchPrevious().then(
-      messages => {
-        console.log(messages, 'chat messages');
-        let mes = messages.map(msg => {
+  const realTimeMessage = () => {
+    let listenerID = GUID;
+    CometChat.addMessageListener(
+      listenerID,
+      new CometChat.MessageListener({
+        onTextMessageReceived: msg => {
+          console.log('Text message received successfully', msg);
+          console.log(msg.rawMessage);
           let obj = {
             message: msg.text,
             sender: msg.rawMessage.sender,
+            sentAt: msg.rawMessage.sentAt,
             date: new Date(msg.rawMessage.sentAt * 1000).toDateString(),
-            hours: [
-              new Date(msg.rawMessage.sentAt * 1000).getHours(),
-              new Date(msg.rawMessage.sentAt * 1000).getMinutes(),
-            ],
+            id: msg.id,
+            hours: new Date(msg.rawMessage.sentAt * 1000).getHours(),
+            minutes: new Date(msg.rawMessage.sentAt * 1000).getMinutes(),
           };
-          return obj;
-        });
-        /* createNewList(mes); */
-        console.log(mes, 'messages');
-        setAllMessage(mes);
-      },
-      error => {
-        console.log('Message fetching failed with error:', error);
-      },
+          console.log(obj, 'new message real time chat');
+          /*     createChat(obj); */
+          console.log(Allmessage, 'dsafdsfaaa');
+          setAllMessage([...Allmessage, obj]);
+        },
+      }),
     );
   };
+
+  const alreadyMessage = async () => {
+    try {
+      const chats = await database
+        .get(Constent.databaseVariable.schemaChat)
+        .query(Q.sortBy('sentAt', Q.asc));
+      console.log(chats, 'local data ');
+      const localChat = chats.map(chat => chat._raw);
+      if (localChat.length) {
+        LastMessage = localChat[localChat.length - 1].sentAt;
+      }
+      const messagesRequest = new CometChat.MessagesRequestBuilder()
+        .setGUID(GUID)
+        .setLimit(1)
+        .build();
+      try {
+        const messages = await messagesRequest.fetchPrevious();
+        console.log(messages[0].sentAt, 'dfasfa', LastMessage);
+        if (!localChat.length || messages[0].sentAt !== LastMessage) {
+          console.log('from commet Chat');
+          /*       setMessageId(messageid); */
+          getChat();
+        } else {
+          console.log('local Message 1');
+          const messageid = Number(localChat[0].messageid);
+          console.log(
+            typeof messageid,
+            'type of hello message id in else condition',
+          );
+          console.log(messageid, 'getchat from local db');
+          setMessageId(messageid);
+          console.log(localChat, 'local Chat in else condition');
+          setAllMessage(localChat);
+          setLoader(false);
+        }
+      } catch (err) {
+        console.log(err, 'err');
+      }
+      /*   const ListMessageid = localChat[localChat.length - 1].messageid; */ // start from here
+    } catch (err) {
+      return false;
+    }
+  };
+
+  const getChat = async () => {
+    const messagesRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(GUID)
+      .setLimit(limit)
+      .build();
+    try {
+      const messages = await messagesRequest.fetchPrevious();
+      let mes = messages.map(msg => {
+        /*     console.log(msg.rawMessage.sentAt, 'message sent at', msg.text, msg.id); */
+        let obj = {
+          message: msg.text,
+          sender: msg.rawMessage.sender,
+          sentAt: msg.rawMessage.sentAt,
+          date: new Date(msg.rawMessage.sentAt * 1000).toDateString(),
+          id: msg.id,
+          hours: new Date(msg.rawMessage.sentAt * 1000).getHours(),
+          minutes: new Date(msg.rawMessage.sentAt * 1000).getMinutes(),
+        };
+        console.log(obj.sentAt, 'messageid', obj.id);
+        createChat(obj);
+        return obj;
+      });
+      const messageid = Number(messages[11].id - 11);
+      console.log(messageid, 'dfads');
+      setMessageId(messageid);
+      setAllMessage(mes);
+      setLoader(false);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const messageExist = async messageid1 => {
+    try {
+      const users = await database
+        .get(Constent.databaseVariable.schemaChat)
+        .query(Q.where('messageid', messageid1));
+      console.log(users.length, 'message length');
+      return users.length ? true : false;
+    } catch (err) {
+      return false;
+    }
+  };
+  const saveInLocalDbMessages = async getChat => {
+    try {
+      const chats = database.collections.get(
+        Constent.databaseVariable.schemaChat,
+      );
+
+      await database.write(async () => {
+        await chats.create(chat => {
+          chat.message = getChat.message;
+          chat.date = getChat.date;
+          chat.hours = getChat.hours;
+          chat.minutes = getChat.minutes;
+          chat.sender = getChat.sender;
+          chat.messageid = getChat.id;
+          chat.sentAt = getChat.sentAt;
+        });
+      });
+      console.log(getChat.id, 'data saved!');
+    } catch (error) {
+      console.log(error);
+    }
+  };
+  const createChat = async getChat => {
+    try {
+      const flag = await messageExist(getChat.id);
+      console.log(flag, 'flag value');
+      if (!flag) {
+        await saveInLocalDbMessages(getChat);
+        console.log('messages saved');
+      } else {
+      }
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const getChat1 = async () => {
+    const messagesRequest = new CometChat.MessagesRequestBuilder()
+      .setGUID(GUID)
+      .setMessageId(messageId)
+      .setLimit(limit)
+      .build();
+    try {
+      setMessageLoader(true);
+      const messages = await messagesRequest.fetchPrevious();
+      let mes = messages.map(msg => {
+        let obj = {
+          message: msg.text,
+          sender: msg.rawMessage.sender,
+          sentAt: msg.rawMessage.sentAt,
+          date: new Date(msg.rawMessage.sentAt * 1000).toDateString(),
+          id: msg.id,
+          hours: new Date(msg.rawMessage.sentAt * 1000).getHours(),
+          minutes: new Date(msg.rawMessage.sentAt * 1000).getMinutes(),
+        };
+        console.log(obj, 'previous message in cometChat');
+        saveInLocalDbMessages(obj);
+        return obj;
+      });
+      const messageid = Number(messages[11].id - 11);
+      console.log(messageid, 'message id in getChat11 pagination');
+      setMessageId(messageid);
+      setAllMessage([...mes, ...Allmessage]);
+    } catch (err) {
+      console.log(err);
+    } finally {
+      setMessageLoader(false);
+    }
+  };
+
   const sendMessage = () => {
     if (message?.length) {
       console.log(message);
@@ -82,6 +242,7 @@ const ChatScreen = ({ navigation }) => {
       CometChat.sendMessage(textMessage).then(
         message => {
           setMessage('');
+          setTimeout(() => flatListRef.scrollToIndex({ index: 0 }), 1000);
           getChat();
           console.log('Message sent successfully:', message);
         },
@@ -93,94 +254,83 @@ const ChatScreen = ({ navigation }) => {
       console.log('empty message');
     }
   };
-  const getDay = date => {
-    const date1 = new Date(date).getDate();
-    const today = new Date().getDate();
-    const yesterday = new Date().getDate() - 1;
-    if (date1 === today) {
-      return 'Today';
-    } else if (date1 === yesterday) {
-      return 'Yesterday';
-    } else {
-      return new Date(date).toLocaleDateString();
-    }
-    /* console.log(date1, 'dsafdsfa');
-    return null; */
-  };
-  const checkDate = (index, date1, arr, message) => {
-    /*  console.log(index, 'index'); */
-    /*  if (index === 0) {
-      console.log(index, 'in 0 ', message);
-      return getDay(arr[index].date);
-    } */
-    if (index === arr.length - 1) {
-      console.log(index, 'in if', message);
-      return getDay(arr[index].date);
-    } else if (index > 0) {
-      console.log(index, 'in else', message);
-      const indx =
-        new Date(arr[index].date).getDate() -
-        new Date(arr[index - 1].date).getDate();
-      const date = indx == 0 ? null : getDay(arr[index - 1].date);
-      return date;
-    }
-  };
+
   return (
     <View style={ContainerStyle.MainContainer}>
       <CustomHeader
         title={Constent.constent.group}
         goToBack={() => navigation.goBack()}
+        customStyleForBtn={{
+          width: wp('10%'),
+          height: hp('8%'),
+          borderWidth: 1,
+          backgroundColor: 'red',
+        }}
       />
-      <View
-        style={[
-          ContainerStyle.contentContainer,
-          styles.contentContainer,
-          focus ? styles.content : null,
-        ]}
-      >
-        <FlatList
-          inverted
-          style={styles.listStyle}
-          data={[...Allmessage].reverse()}
-          renderItem={({ item, index }) => (
-            <>
+      <View style={[ContainerStyle.contentContainer]}>
+        {loader ? (
+          <CustomLoader show={true} size={60} />
+        ) : (
+          <FlatList
+            inverted
+            ref={ref => setFlatListRef(ref)}
+            style={styles.listStyle}
+            data={[...Allmessage].reverse()}
+            keyExtractor={item => item.id}
+            onEndReached={getChat1}
+            onEndReachedThreshold={0.5}
+            ListFooterComponent={() => {
+              return (
+                <View style={styles.messageLoader}>
+                  {messageLoader ? (
+                    <CustomLoader show={true} size={20} />
+                  ) : (
+                    <></>
+                  )}
+                </View>
+              );
+            }}
+            ListFooterComponentStyle={{ height: 50, width: 50 }}
+            renderItem={({ item, index }) => (
               <CustomMessage
                 myId={myId}
                 message={item.message}
                 sender={item.sender}
                 time={item.hours}
+                hours={item.hours}
+                minutes={item.minutes}
                 arr={[...Allmessage].reverse()}
-                date1={checkDate(index, item.date, Allmessage, item.message)}
+                index={index}
+                /* date1={true} */
               />
-            </>
-          )}
-        />
-
+            )}
+          />
+        )}
         <KeyboardAvoidingView
           behavior={Platform.OS === 'ios' ? 'padding' : 'height'}
           keyboardVerticalOffset={Platform.select({ ios: 100, android: 500 })}
         >
           <TouchableWithoutFeedback
-            style={{ flex: 1 }}
+            /*     style={{ flex: 1 }} */
             onPress={Keyboard.dismiss}
           >
             <View style={styles.sendMessageContainer}>
-              <View style={styles.sendMessageInput}>
-                <CustomInputFeild
-                  visibility={true}
-                  value={message}
-                  setValues={txt => setMessage(txt)}
-                  focus1={focus}
-                  setFocus1={setFocus}
-                  multiline={true}
-                  style1={styles.messageInput}
-                />
-              </View>
-              <View style={styles.sendMessageIcon}>
-                <TouchableOpacity onPress={() => sendMessage()}>
-                  {Constent.Icons.send}
-                </TouchableOpacity>
-              </View>
+              <CustomInputFeild
+                visibility={true}
+                value={message}
+                setValues={txt => setMessage(txt)}
+                focus1={focus}
+                setFocus1={setFocus}
+                multiline={true}
+                customStyle={{ width: wp('80%'), height: hp('8%') }}
+              />
+
+              <TouchableOpacity
+                style={styles.sendMessageIcon}
+                onPress={() => sendMessage()}
+              >
+                {Constent.Icons.send}
+              </TouchableOpacity>
             </View>
           </TouchableWithoutFeedback>
         </KeyboardAvoidingView>
@@ -190,34 +340,31 @@ const ChatScreen = ({ navigation }) => {
 };
 const styles = StyleSheet.create({
   sendMessageContainer: {
-    position: 'relative',
-    width: wp('98%'),
-    height: hp('9%'),
-    display: 'flex',
+    /*  borderWidth: 1, */
+    width: wp('96%'),
+    height: hp('8%'),
     flexDirection: 'row',
     alignItems: 'center',
   },
-  sendMessageInput: {
-    width: '85%',
+  messageLoader: {
+    flex: 1,
+    alignItems: 'center',
+    width: wp('100%'),
   },
-  listStyle: { width: '100%', padding: '2%' },
+  listStyle: { width: wp('100%'), marginBottom: hp('2%') },
   sendMessageIcon: {
     padding: 10,
     borderRadius: 100,
-    display: 'flex',
     alignItems: 'center',
     justifyContent: 'center',
     backgroundColor: Colors.primary,
+    marginLeft: 3,
   },
   contentContainer: {
     paddingTop: 0,
   },
   content: {
     marginBottom: wp('10%'),
-  },
-  messageInput: {
-    height: 100,
-    background: 'red',
   },
 });
 export default ChatScreen;
