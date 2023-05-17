@@ -113,3 +113,9 @@
 22	3274	1684241394	CMakeFiles/appmodules.dir/OnLoad.cpp.o	4187c63f67d3e98f
 22	24733	1684241415	CMakeFiles/appmodules.dir/Users/chicmic/Desktop/reactnative/ChatApp/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	41b502db655df5b4
 24733	25343	1684241415	/Users/chicmic/Desktop/reactnative/ChatApp/android/app/build/intermediates/cxx/Debug/6x5m4j6k/obj/arm64-v8a/libappmodules.so	79b348fc2aae7168
+9	96	0	/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/6x5m4j6k/arm64-v8a/CMakeFiles/cmake.verify_globs	21db710b898da5d0
+96	245	1684298138	build.ninja	f37fd98619d19f6e
+1	15	0	/Users/chicmic/Desktop/reactnative/ChatApp/android/app/.cxx/Debug/6x5m4j6k/arm64-v8a/CMakeFiles/cmake.verify_globs	21db710b898da5d0
+23	3223	1684298141	CMakeFiles/appmodules.dir/OnLoad.cpp.o	4187c63f67d3e98f
+23	24818	1684298163	CMakeFiles/appmodules.dir/Users/chicmic/Desktop/reactnative/ChatApp/android/app/build/generated/rncli/src/main/jni/rncli.cpp.o	41b502db655df5b4
+24818	25427	1684298164	/Users/chicmic/Desktop/reactnative/ChatApp/android/app/build/intermediates/cxx/Debug/6x5m4j6k/obj/arm64-v8a/libappmodules.so	79b348fc2aae7168

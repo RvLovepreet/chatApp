@@ -67,8 +67,8 @@ const ChatScreen = ({ navigation }) => {
           };
           console.log(obj, 'new message real time chat');
           /*     createChat(obj); */
-          console.log(Allmessage, 'dsafdsfaaa');
-          setAllMessage([...Allmessage, obj]);
+          getChat();
+          /*   setAllMessage([...Allmessage, obj]); */
         },
       }),
     );
